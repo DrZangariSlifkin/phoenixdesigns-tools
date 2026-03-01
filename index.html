@@ -55,43 +55,21 @@
     margin-top: 6px;
   }
 
-  /* ---------- Mobile tweaks ---------- */
-  @media (max-width: 700px) {
-    body {
-      margin: 22px auto;
-      padding: 0 14px;
-    }
-
-    h1 { margin-bottom: 18px; }
-
-    h2 {
-      margin-top: 28px;
-      font-size: 16px;
-    }
-
-    /* Force 2 columns on mobile */
+  /* Mobile layout: force 2 columns */
+  @media (max-width: 600px) {
     .grid {
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
     }
 
-    /* Make cards feel less huge */
     .card {
       padding: 14px;
-      border-radius: 10px;
-      font-size: 15px;
+      font-size: 14px;
     }
 
-    .small {
-      font-size: 12px;
-      margin-top: 4px;
+    h1 {
+      font-size: 28px;
     }
-  }
-
-  /* Extra small phones: still 2 columns but a bit tighter */
-  @media (max-width: 380px) {
-    .grid { gap: 10px; }
-    .card { padding: 12px; font-size: 14px; }
   }
 </style>
 </head>
@@ -104,67 +82,47 @@
   <a class="card" href="https://books.phoenixdesigns.net">Audiobookshelf</a>
   <a class="card" href="http://72.72.136.86:32400">Plex</a>
   <a class="card" href="https://notes.phoenixdesigns.net">Book Notes</a>
-  <a class="card" href="https://dash.cloudflare.com/75b77c6b315564caa877a54d811bfab9/phoenixdesigns.net">Cloudflare</a>
   <a class="card" href="https://dash.cloudflare.com/75b77c6b315564caa877a54d811bfab9/phoenixdesigns.net/dns/records">DNS Records</a>
   <a class="card" href="https://github.com/DrZangariSlifkin/phoenixdesigns/tree/main/PhoenixDesigns.net">GitHub – Main Site</a>
   <a class="card" href="https://github.com/DrZangariSlifkin/phoenixdesigns-notes">GitHub – Notes</a>
   <a class="card" href="https://github.com/DrZangariSlifkin/phoenixdesigns-tools">GitHub – Tools</a>
 </div>
 
+<h2>Web / SEO</h2>
+<div class="grid">
+  <a class="card" href="https://dash.cloudflare.com/75b77c6b315564caa877a54d811bfab9/phoenixdesigns.net">
+    Cloudflare Dashboard
+  </a>
+
+  <a class="card" href="https://search.google.com/u/1/search-console?resource_id=sc-domain%3Aphoenixdesigns.net">
+    Google Search Console
+  </a>
+
+  <a class="card" href="https://console.cloud.google.com/apis/credentials?authuser=1&project=cloudflare-tools-login&supportedpurview=project">
+    Google Cloud Console
+  </a>
+</div>
+
 <h2>Online Tools</h2>
 <div class="grid">
-  <a class="card" href="https://whatismyipaddress.com/">
-    What’s My IP
-    <div class="small">Public IP + ISP info</div>
-  </a>
-  <a class="card" href="https://dnschecker.org/">
-    DNS Checker
-    <div class="small">Global DNS propagation check</div>
-  </a>
-  <a class="card" href="https://www.ssllabs.com/ssltest/">
-    SSL Checker
-    <div class="small">Certificate + HTTPS diagnostics</div>
-  </a>
-  <a class="card" href="https://jsonformatter.org/">
-    JSON Formatter
-    <div class="small">Beautify + validate JSON</div>
-  </a>
-  <a class="card" href="https://www.base64decode.org/">
-    Base64 Encode / Decode
-    <div class="small">Convert Base64 strings</div>
-  </a>
-  <a class="card" href="https://markdownlivepreview.com/">
-    Markdown Preview
-    <div class="small">Live Markdown renderer</div>
-  </a>
-  <a class="card" href="https://www.rapidtables.com/calc/electric/kwh-calculator.html">
-    kWh Cost Calculator
-    <div class="small">Energy usage cost estimator</div>
-  </a>
-  <a class="card" href="https://www.speedtest.net/">
-    Speedtest
-    <div class="small">Internet speed test</div>
-  </a>
+  <a class="card" href="https://whatismyipaddress.com/">What’s My IP<div class="small">Public IP + ISP info</div></a>
+  <a class="card" href="https://dnschecker.org/">DNS Checker<div class="small">Global DNS propagation check</div></a>
+  <a class="card" href="https://www.ssllabs.com/ssltest/">SSL Checker<div class="small">Certificate + HTTPS diagnostics</div></a>
+  <a class="card" href="https://jsonformatter.org/">JSON Formatter<div class="small">Beautify + validate JSON</div></a>
+  <a class="card" href="https://www.base64decode.org/">Base64 Encode / Decode<div class="small">Convert Base64 strings</div></a>
+  <a class="card" href="https://markdownlivepreview.com/">Markdown Preview<div class="small">Live Markdown renderer</div></a>
+  <a class="card" href="https://www.rapidtables.com/calc/electric/kwh-calculator.html">kWh Cost Calculator<div class="small">Energy usage cost estimator</div></a>
+  <a class="card" href="https://www.speedtest.net/">Speedtest<div class="small">Internet speed test</div></a>
 </div>
 
 <h2>Home Network Only</h2>
 <div class="grid">
-  <a class="card" href="https://192.168.1.1/#/login/">
-    Router Admin
-    <div class="small">Any local device</div>
-  </a>
-  <a class="card" href="http://localhost:8181/users">
-    Tautulli
-    <div class="small">Jolly Roger only</div>
-  </a>
-  <a class="card" href="http://127.0.0.1:5454/">
-    Notifiarr
-    <div class="small">Jolly Roger only</div>
-  </a>
+  <a class="card" href="https://192.168.1.1/#/login/">Router Admin<div class="small">Any local device</div></a>
+  <a class="card" href="http://localhost:8181/users">Tautulli<div class="small">Jolly Roger only</div></a>
+  <a class="card" href="http://127.0.0.1:5454/">Notifiarr<div class="small">Jolly Roger only</div></a>
 </div>
 
 <script>
-  // Force all cards to open in a new tab
   document.querySelectorAll('.card').forEach(link => {
     link.setAttribute('target', '_blank');
     link.setAttribute('rel', 'noopener noreferrer');
