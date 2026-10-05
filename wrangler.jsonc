@@ -3,6 +3,7 @@
   "name": "activity-picker-api",
   "main": "cloudflare-worker/activity-picker.mjs",
   "compatibility_date": "2026-10-05",
+  "workers_dev": false,
   "kv_namespaces": [
     {
       "binding": "ACTIVITY_PICKER",
