@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#000000" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="apple-mobile-web-app-title" content="Tonight" />
+  <title>Tonight's Activity</title>
+  <link rel="manifest" href="manifest.webmanifest" />
+  <link rel="icon" href="icon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="icon.svg" />
+  <style>
+    :root { color-scheme: dark; font-family: Arial, sans-serif; }
+    * { box-sizing: border-box; }
+    body {
+      min-height: 100vh;
+      margin: 0;
+      background: #000;
+      color: #fff;
+      padding: max(24px, env(safe-area-inset-top)) max(18px, env(safe-area-inset-right)) max(32px, env(safe-area-inset-bottom)) max(18px, env(safe-area-inset-left));
+    }
+    main { width: min(680px, 100%); margin: 0 auto; }
+    nav { margin-bottom: 28px; }
+    nav a { color: #aaa; text-decoration: none; }
+    nav a:hover { color: #fff; }
+    h1 { margin: 0 0 8px; font-size: clamp(30px, 8vw, 48px); }
+    .intro { margin: 0 0 28px; color: #aaa; line-height: 1.5; }
+    .picker-card, .pool {
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 14px;
+      padding: 22px;
+    }
+    .result-label { margin: 0 0 10px; color: #888; font-size: 13px; text-transform: uppercase; letter-spacing: .08em; }
+    #result { min-height: 76px; margin: 0 0 22px; color: #999; font-size: clamp(22px, 7vw, 38px); font-weight: 700; line-height: 1.15; display: flex; align-items: center; }
+    #result.has-pick { color: #fff; }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    .primary {
+      width: 100%;
+      min-height: 56px;
+      border: 0;
+      border-radius: 10px;
+      background: #fff;
+      color: #000;
+      padding: 14px 18px;
+      font-weight: 700;
+      font-size: 17px;
+    }
+    .primary:hover { background: #ddd; }
+    .primary:disabled { cursor: not-allowed; background: #555; color: #aaa; }
+    #remaining { margin: 14px 0 0; color: #888; font-size: 13px; text-align: center; }
+    .pool { margin-top: 22px; }
+    .pool h2 { margin: 0 0 16px; font-size: 20px; }
+    #add-form { display: flex; gap: 8px; }
+    input {
+      min-width: 0;
+      flex: 1;
+      border: 1px solid #444;
+      border-radius: 8px;
+      background: #090909;
+      color: #fff;
+      padding: 12px;
+    }
+    input:focus { outline: 2px solid #fff; outline-offset: 1px; }
+    #add-form button, .edit-form button {
+      border: 1px solid #555;
+      border-radius: 8px;
+      background: #252525;
+      color: #fff;
+      padding: 10px 14px;
+    }
+    ul { margin: 18px 0 0; padding: 0; list-style: none; }
+    li { display: flex; align-items: center; justify-content: space-between; gap: 12px; border-top: 1px solid #292929; padding: 14px 0; }
+    li:last-child { padding-bottom: 0; }
+    li > span { overflow-wrap: anywhere; }
+    .row-actions { display: flex; flex: 0 0 auto; gap: 10px; }
+    .text-button { border: 0; background: none; color: #aaa; padding: 5px 0; }
+    .text-button:hover { color: #fff; }
+    .text-button.danger { color: #db8b8b; }
+    .edit-form { display: flex; width: 100%; gap: 8px; }
+    .secondary { color: #aaa !important; background: transparent !important; }
+    #empty-message { margin: 18px 0 0; color: #888; }
+    .privacy { margin: 18px 0 0; color: #666; font-size: 12px; text-align: center; }
+    @media (max-width: 480px) {
+      .picker-card, .pool { padding: 18px; }
+      .edit-form { flex-wrap: wrap; }
+      .edit-form input { flex-basis: 100%; }
+    }
+  </style>
+</head>
+<body>
+  <main>
+    <nav><a href="../">&larr; All tools</a></nav>
+    <h1>Tonight's Activity</h1>
+    <p class="intro">Pick from your list. Every activity comes up once before the bag reshuffles.</p>
+
+    <section class="picker-card" aria-labelledby="picker-heading">
+      <p class="result-label" id="picker-heading">Tonight</p>
+      <p id="result" aria-live="polite">Your next activity will appear here.</p>
+      <button class="primary" id="pick-button" type="button">Pick Tonight's Activity</button>
+      <p id="remaining" aria-live="polite"></p>
+    </section>
+
+    <section class="pool" aria-labelledby="pool-heading">
+      <h2 id="pool-heading">Activity pool</h2>
+      <form id="add-form">
+        <input id="activity-input" type="text" maxlength="80" placeholder="Add an activity" aria-label="New activity" required />
+        <button type="submit">Add</button>
+      </form>
+      <ul id="activity-list"></ul>
+      <p id="empty-message" hidden>Your activity pool is empty.</p>
+    </section>
+    <p class="privacy">Your list and progress stay in this browser.</p>
+  </main>
+  <script src="picker-core.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
