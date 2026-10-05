@@ -1,0 +1,18 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "activity-picker-api",
+  "main": "cloudflare-worker/activity-picker.mjs",
+  "compatibility_date": "2026-10-05",
+  "kv_namespaces": [
+    {
+      "binding": "ACTIVITY_PICKER",
+      "id": "d230d57f136b4208b48fac141ff0b8aa"
+    }
+  ],
+  "routes": [
+    {
+      "pattern": "tools.phoenixdesigns.net/api/activity-picker*",
+      "zone_name": "phoenixdesigns.net"
+    }
+  ]
+}

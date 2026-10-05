@@ -26,8 +26,8 @@
     nav { margin-bottom: 28px; }
     nav a { color: #aaa; text-decoration: none; }
     nav a:hover { color: #fff; }
-    h1 { margin: 0 0 8px; font-size: clamp(30px, 8vw, 48px); }
-    .intro { margin: 0 0 28px; color: #aaa; line-height: 1.5; }
+    h1 { margin: 0 0 8px; font-size: clamp(30px, 8vw, 48px); text-align: center; }
+    .intro { margin: 0 0 28px; color: #aaa; line-height: 1.5; text-align: center; }
     .picker-card, .pool {
       background: #111;
       border: 1px solid #333;
@@ -85,6 +85,8 @@
     .secondary { color: #aaa !important; background: transparent !important; }
     #empty-message { margin: 18px 0 0; color: #888; }
     .privacy { margin: 18px 0 0; color: #666; font-size: 12px; text-align: center; }
+    #sync-status[data-state="synced"] { color: #8ebd91; }
+    #sync-status[data-state="offline"] { color: #dbb07b; }
     @media (max-width: 480px) {
       .picker-card, .pool { padding: 18px; }
       .edit-form { flex-wrap: wrap; }
@@ -114,7 +116,7 @@
       <ul id="activity-list"></ul>
       <p id="empty-message" hidden>Your activity pool is empty.</p>
     </section>
-    <p class="privacy">Your list and progress stay in this browser.</p>
+    <p class="privacy" id="sync-status" data-state="working" aria-live="polite">Loading shared list...</p>
   </main>
   <script src="picker-core.js"></script>
   <script src="app.js"></script>

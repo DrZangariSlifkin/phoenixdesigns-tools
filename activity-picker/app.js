@@ -1,11 +1,9 @@
 const STORAGE_KEY = 'phoenix-activity-picker-v1';
 const DEFAULT_ACTIVITIES = [
-  'Read a book',
   'Play PS5',
-  '3D print something',
-  'Watch a movie',
-  'Work on a Fusion project',
-  'Listen to an audiobook'
+  'Read',
+  'Paint',
+  'Computer stuff'
 ];
 
 const createId = () => {
@@ -43,9 +41,36 @@ const addForm = document.querySelector('#add-form');
 const activityInput = document.querySelector('#activity-input');
 const activityList = document.querySelector('#activity-list');
 const emptyMessage = document.querySelector('#empty-message');
+const syncStatus = document.querySelector('#sync-status');
 
 function saveState() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+}
+
+function setSyncStatus(message, stateName) {
+  syncStatus.textContent = message;
+  syncStatus.dataset.state = stateName;
+}
+
+async function syncState() {
+  setSyncStatus('Saving shared list...', 'working');
+  try {
+    const response = await fetch('/api/activity-picker', {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(state)
+    });
+    if (!response.ok) throw new Error(`Save failed with status ${response.status}`);
+    setSyncStatus('Synced across devices', 'synced');
+  } catch (error) {
+    console.warn('Could not sync activity data.', error);
+    setSyncStatus('Saved in this browser; cloud sync unavailable', 'offline');
+  }
+}
+
+function saveAndSync() {
+  saveState();
+  void syncState();
 }
 
 function currentActivity() {
@@ -97,7 +122,7 @@ function makeActivityRow(activity) {
       if (!name) return;
       activity.name = name;
       editingId = null;
-      saveState();
+      saveAndSync();
       render();
     });
     form.append(input, save, cancel);
@@ -142,7 +167,7 @@ function pickActivity() {
   state.currentId = next.pickedId;
   state.lastPickedId = next.pickedId;
   state.remainingIds = next.remainingIds;
-  saveState();
+  saveAndSync();
   render();
 }
 
@@ -151,7 +176,7 @@ function removeActivity(id) {
   state.remainingIds = state.remainingIds.filter((itemId) => itemId !== id);
   if (state.currentId === id) state.currentId = null;
   if (state.lastPickedId === id) state.lastPickedId = null;
-  saveState();
+  saveAndSync();
   render();
 }
 
@@ -165,9 +190,30 @@ addForm.addEventListener('submit', (event) => {
   state.activities.push(activity);
   state.remainingIds.push(activity.id);
   activityInput.value = '';
-  saveState();
+  saveAndSync();
   render();
   activityInput.focus();
 });
 
 render();
+
+async function loadSharedState() {
+  setSyncStatus('Loading shared list...', 'working');
+  try {
+    const response = await fetch('/api/activity-picker', { cache: 'no-store' });
+    if (!response.ok) throw new Error(`Load failed with status ${response.status}`);
+    const sharedState = await response.json();
+    if (!sharedState || !Array.isArray(sharedState.activities) || !Array.isArray(sharedState.remainingIds)) {
+      throw new Error('Shared state has an invalid format.');
+    }
+    state = sharedState;
+    saveState();
+    render();
+    setSyncStatus('Synced across devices', 'synced');
+  } catch (error) {
+    console.warn('Could not load shared activity data.', error);
+    setSyncStatus('Saved in this browser; cloud sync unavailable', 'offline');
+  }
+}
+
+void loadSharedState();
