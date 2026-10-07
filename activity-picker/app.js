@@ -71,6 +71,24 @@ const activityList = document.querySelector('#activity-list');
 const emptyMessage = document.querySelector('#empty-message');
 const syncStatus = document.querySelector('#sync-status');
 
+const returnButton = document.createElement('button');
+
+returnButton.type = 'button';
+returnButton.textContent = "Return to Today's Activity";
+returnButton.hidden = true;
+
+returnButton.style.width = '100%';
+returnButton.style.minHeight = '48px';
+returnButton.style.marginTop = '10px';
+returnButton.style.border = '1px solid #555';
+returnButton.style.borderRadius = '10px';
+returnButton.style.background = '#1a1a1a';
+returnButton.style.color = '#fff';
+returnButton.style.padding = '12px 18px';
+returnButton.style.fontWeight = '700';
+
+pickButton.insertAdjacentElement('afterend', returnButton);
+
 function saveState() {
   localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
 }
@@ -171,6 +189,7 @@ function renderResult() {
     : 'Surprise Me Instead';
 
   pickButton.disabled = state.activities.length < 2;
+  returnButton.hidden = !surprise;
 }
 
 function renderRemaining() {
@@ -306,6 +325,11 @@ function pickActivity() {
   render();
 }
 
+function returnToScheduledActivity() {
+  surpriseId = null;
+  render();
+}
+
 function removeActivity(id) {
   state.activities = state.activities.filter(
     (item) => item.id !== id
@@ -344,6 +368,11 @@ function checkForNewDay() {
 }
 
 pickButton.addEventListener('click', pickActivity);
+
+returnButton.addEventListener(
+  'click',
+  returnToScheduledActivity
+);
 
 addForm.addEventListener('submit', (event) => {
   event.preventDefault();
