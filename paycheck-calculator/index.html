@@ -1,0 +1,650 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover"
+  />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#000000" />
+
+  <title>Paycheck Calculator</title>
+
+  <style>
+    :root {
+      color-scheme: dark;
+      font-family: Arial, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      min-height: 100vh;
+      margin: 0;
+      background: #000;
+      color: #fff;
+      padding:
+        max(24px, env(safe-area-inset-top))
+        max(18px, env(safe-area-inset-right))
+        max(32px, env(safe-area-inset-bottom))
+        max(18px, env(safe-area-inset-left));
+    }
+
+    main {
+      width: min(680px, 100%);
+      margin: 0 auto;
+    }
+
+    nav {
+      margin-bottom: 28px;
+    }
+
+    nav a {
+      color: #aaa;
+      text-decoration: none;
+    }
+
+    nav a:hover {
+      color: #fff;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: clamp(30px, 8vw, 48px);
+      text-align: center;
+    }
+
+    .intro {
+      margin: 0 0 28px;
+      color: #aaa;
+      line-height: 1.5;
+      text-align: center;
+    }
+
+    .card {
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 14px;
+      padding: 22px;
+    }
+
+    .hours-label {
+      display: block;
+      margin-bottom: 8px;
+      color: #bbb;
+      font-size: 14px;
+      font-weight: 700;
+    }
+
+    input,
+    select,
+    button {
+      font: inherit;
+    }
+
+    input,
+    select {
+      width: 100%;
+      min-width: 0;
+      border: 1px solid #444;
+      border-radius: 8px;
+      background: #090909;
+      color: #fff;
+      padding: 12px;
+    }
+
+    input:focus,
+    select:focus {
+      outline: 2px solid #fff;
+      outline-offset: 1px;
+    }
+
+    #hours {
+      padding: 14px;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .result {
+      margin-top: 24px;
+      padding-top: 22px;
+      border-top: 1px solid #292929;
+      text-align: center;
+    }
+
+    .result-label {
+      margin: 0 0 8px;
+      color: #888;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    #take-home {
+      margin: 0;
+      font-size: clamp(42px, 12vw, 68px);
+      font-weight: 700;
+      line-height: 1.1;
+    }
+
+    .summary {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 22px;
+    }
+
+    .summary-item {
+      background: #090909;
+      border: 1px solid #292929;
+      border-radius: 10px;
+      padding: 14px;
+      text-align: center;
+    }
+
+    .summary-item span {
+      display: block;
+      margin-bottom: 5px;
+      color: #888;
+      font-size: 12px;
+    }
+
+    .summary-item strong {
+      font-size: 18px;
+    }
+
+    details {
+      margin-top: 22px;
+      background: #111;
+      border: 1px solid #333;
+      border-radius: 14px;
+    }
+
+    summary {
+      cursor: pointer;
+      padding: 20px 22px;
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .settings-content {
+      padding: 0 22px 22px;
+    }
+
+    .settings-section {
+      padding: 22px 0;
+      border-top: 1px solid #292929;
+    }
+
+    .settings-section:first-child {
+      border-top: 0;
+    }
+
+    .settings-section h2 {
+      margin: 0 0 16px;
+      font-size: 17px;
+    }
+
+    .field-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .field {
+      min-width: 0;
+    }
+
+    .field.full {
+      grid-column: 1 / -1;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 6px;
+      color: #aaa;
+      font-size: 13px;
+    }
+
+    .field small {
+      display: block;
+      margin-top: 5px;
+      color: #777;
+      line-height: 1.35;
+    }
+
+    .retirement-row,
+    .example-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .example-row + .example-row {
+      margin-top: 10px;
+    }
+
+    .privacy {
+      margin: 18px 0 0;
+      color: #666;
+      font-size: 12px;
+      text-align: center;
+    }
+
+    #sync-status[data-state="synced"] {
+      color: #8ebd91;
+    }
+
+    #sync-status[data-state="offline"] {
+      color: #dbb07b;
+    }
+
+    @media (max-width: 520px) {
+      .card {
+        padding: 18px;
+      }
+
+      summary {
+        padding: 18px;
+      }
+
+      .settings-content {
+        padding: 0 18px 18px;
+      }
+
+      .field-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .field.full {
+        grid-column: auto;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main>
+    <nav>
+      <a href="../">&larr; All tools</a>
+    </nav>
+
+    <h1>Paycheck Calculator</h1>
+
+    <p class="intro">
+      Enter your hours to estimate this paycheck.
+    </p>
+
+    <section class="card" aria-labelledby="hours-heading">
+      <label class="hours-label" id="hours-heading" for="hours">
+        Hours worked
+      </label>
+
+      <input
+        id="hours"
+        type="number"
+        min="0"
+        max="168"
+        step="0.01"
+        inputmode="decimal"
+        value="36"
+      />
+
+      <div class="result">
+        <p class="result-label">Estimated take-home</p>
+        <p id="take-home" aria-live="polite">$0.00</p>
+      </div>
+
+      <div class="summary">
+        <div class="summary-item">
+          <span>Gross pay</span>
+          <strong id="gross-pay">$0.00</strong>
+        </div>
+
+        <div class="summary-item">
+          <span>Total deductions</span>
+          <strong id="total-deductions">$0.00</strong>
+        </div>
+      </div>
+    </section>
+
+    <details>
+      <summary>Paycheck settings</summary>
+
+      <div class="settings-content">
+        <section class="settings-section">
+          <h2>Pay</h2>
+
+          <div class="field-grid">
+            <div class="field">
+              <label for="hourly-rate">Hourly rate</label>
+              <input
+                id="hourly-rate"
+                type="number"
+                min="0"
+                step="0.001"
+                inputmode="decimal"
+              />
+            </div>
+
+            <div class="field">
+              <label for="other-taxable-pay">Other taxable pay</label>
+              <input
+                id="other-taxable-pay"
+                type="number"
+                step="0.01"
+                inputmode="decimal"
+              />
+            </div>
+          </div>
+        </section>
+
+        <section class="settings-section">
+          <h2>Retirement</h2>
+
+          <div class="field-grid">
+            <div class="field full">
+              <label>Traditional 401(k)</label>
+
+              <div class="retirement-row">
+                <select
+                  id="traditional-401k-type"
+                  aria-label="Traditional 401(k) type"
+                >
+                  <option value="Percent">Percent</option>
+                  <option value="Fixed">Fixed amount</option>
+                </select>
+
+                <input
+                  id="traditional-401k-value"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  inputmode="decimal"
+                  aria-label="Traditional 401(k) value"
+                />
+              </div>
+
+              <small>
+                Enter percentages as whole numbers, such as 1 for 1%.
+              </small>
+            </div>
+
+            <div class="field full">
+              <label>Roth 401(k)</label>
+
+              <div class="retirement-row">
+                <select
+                  id="roth-401k-type"
+                  aria-label="Roth 401(k) type"
+                >
+                  <option value="Percent">Percent</option>
+                  <option value="Fixed">Fixed amount</option>
+                </select>
+
+                <input
+                  id="roth-401k-value"
+                  type="number"
+                  min="0"
+                  step="0.01"
+                  inputmode="decimal"
+                  aria-label="Roth 401(k) value"
+                />
+              </div>
+
+              <small>
+                Enter percentages as whole numbers, such as 4 for 4%.
+              </small>
+            </div>
+          </div>
+        </section>
+
+        <section class="settings-section">
+          <h2>Taxes</h2>
+
+          <div class="field-grid">
+            <div class="field">
+              <label for="federal-adjustment">
+                Federal adjustment
+              </label>
+              <input
+                id="federal-adjustment"
+                type="number"
+                step="0.01"
+                inputmode="decimal"
+              />
+            </div>
+
+            <div class="field">
+              <label for="pa-income-tax-rate">
+                PA income tax rate (%)
+              </label>
+              <input
+                id="pa-income-tax-rate"
+                type="number"
+                min="0"
+                step="0.0001"
+                inputmode="decimal"
+              />
+            </div>
+
+            <div class="field">
+              <label for="local-income-tax-rate">
+                Local income tax rate (%)
+              </label>
+              <input
+                id="local-income-tax-rate"
+                type="number"
+                min="0"
+                step="0.0001"
+                inputmode="decimal"
+              />
+            </div>
+
+            <div class="field">
+              <label for="pa-unemployment-rate">
+                PA unemployment rate (%)
+              </label>
+              <input
+                id="pa-unemployment-rate"
+                type="number"
+                min="0"
+                step="0.0001"
+                inputmode="decimal"
+              />
+            </div>
+
+            <div class="field">
+              <label for="social-security-rate">
+                Social Security rate (%)
+              </label>
+              <input
+                id="social-security-rate"
+                type="number"
+                min="0"
+                step="0.01"
+                inputmode="decimal"
+              />
+            </div>
+
+            <div class="field">
+              <label for="medicare-rate">
+                Medicare rate (%)
+              </label>
+              <input
+                id="medicare-rate"
+                type="number"
+                min="0"
+                step="0.01"
+                inputmode="decimal"
+              />
+            </div>
+          </div>
+        </section>
+
+        <section class="settings-section">
+          <h2>Fixed deductions per paycheck</h2>
+
+          <div class="field-grid">
+            <div class="field">
+              <label for="medical">Medical</label>
+              <input id="medical" type="number" step="0.01" />
+            </div>
+
+            <div class="field">
+              <label for="add">AD&amp;D</label>
+              <input id="add" type="number" step="0.01" />
+            </div>
+
+            <div class="field">
+              <label for="child-life">Child life</label>
+              <input id="child-life" type="number" step="0.01" />
+            </div>
+
+            <div class="field">
+              <label for="dental">Dental</label>
+              <input id="dental" type="number" step="0.01" />
+            </div>
+
+            <div class="field">
+              <label for="employee-life">Employee life</label>
+              <input id="employee-life" type="number" step="0.01" />
+            </div>
+
+            <div class="field">
+              <label for="long-term-disability">
+                Long-term disability
+              </label>
+              <input
+                id="long-term-disability"
+                type="number"
+                step="0.01"
+              />
+            </div>
+
+            <div class="field">
+              <label for="local-services-tax">
+                Local services tax
+              </label>
+              <input
+                id="local-services-tax"
+                type="number"
+                step="0.01"
+              />
+            </div>
+
+            <div class="field">
+              <label for="spousal-life">Spousal life</label>
+              <input id="spousal-life" type="number" step="0.01" />
+            </div>
+
+            <div class="field">
+              <label for="short-term-disability">
+                Short-term disability
+              </label>
+              <input
+                id="short-term-disability"
+                type="number"
+                step="0.01"
+              />
+            </div>
+
+            <div class="field">
+              <label for="vision">Vision</label>
+              <input id="vision" type="number" step="0.01" />
+            </div>
+
+            <div class="field full">
+              <label for="other-deductions">
+                Other fixed deductions
+              </label>
+              <input
+                id="other-deductions"
+                type="number"
+                step="0.01"
+              />
+            </div>
+          </div>
+        </section>
+
+        <section class="settings-section">
+          <h2>Federal withholding examples</h2>
+
+          <p class="intro">
+            These previous paychecks calibrate the federal estimate.
+          </p>
+
+          <div class="example-row">
+            <input
+              id="example-1-gross"
+              type="number"
+              step="0.01"
+              aria-label="Example 1 gross pay"
+              placeholder="Gross pay"
+            />
+
+            <input
+              id="example-1-federal"
+              type="number"
+              step="0.01"
+              aria-label="Example 1 federal withholding"
+              placeholder="Federal withheld"
+            />
+          </div>
+
+          <div class="example-row">
+            <input
+              id="example-2-gross"
+              type="number"
+              step="0.01"
+              aria-label="Example 2 gross pay"
+              placeholder="Gross pay"
+            />
+
+            <input
+              id="example-2-federal"
+              type="number"
+              step="0.01"
+              aria-label="Example 2 federal withholding"
+              placeholder="Federal withheld"
+            />
+          </div>
+
+          <div class="example-row">
+            <input
+              id="example-3-gross"
+              type="number"
+              step="0.01"
+              aria-label="Example 3 gross pay"
+              placeholder="Gross pay"
+            />
+
+            <input
+              id="example-3-federal"
+              type="number"
+              step="0.01"
+              aria-label="Example 3 federal withholding"
+              placeholder="Federal withheld"
+            />
+          </div>
+        </section>
+      </div>
+    </details>
+
+    <p
+      class="privacy"
+      id="sync-status"
+      data-state="working"
+      aria-live="polite"
+    >
+      Loading paycheck settings...
+    </p>
+  </main>
+
+  <script src="calculator-core.js"></script>
+  <script src="app.js?v=1"></script>
+</body>
+</html>
