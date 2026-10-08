@@ -12,7 +12,7 @@
   ],
   "routes": [
     {
-      "pattern": "tools.phoenixdesigns.net/api/activity-picker*",
+      "pattern": "tools.phoenixdesigns.net/api/*",
       "zone_name": "phoenixdesigns.net"
     }
   ]
