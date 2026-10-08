@@ -24,8 +24,6 @@ const fields = {
   roth401kValue:
     document.querySelector('#roth-401k-value'),
 
-  federalAdjustment:
-    document.querySelector('#federal-adjustment'),
   paIncomeTaxRate:
     document.querySelector('#pa-income-tax-rate'),
   localIncomeTaxRate:
@@ -53,23 +51,17 @@ const fields = {
   other: document.querySelector('#other-deductions')
 };
 
-const exampleFields = [
-  {
-    grossPay: document.querySelector('#example-1-gross'),
-    federalWithheld:
-      document.querySelector('#example-1-federal')
-  },
-  {
-    grossPay: document.querySelector('#example-2-gross'),
-    federalWithheld:
-      document.querySelector('#example-2-federal')
-  },
-  {
-    grossPay: document.querySelector('#example-3-gross'),
-    federalWithheld:
-      document.querySelector('#example-3-federal')
-  }
-];
+const exampleFields = [1, 2, 3, 4, 5, 6].map(
+  (number) => ({
+    grossPay: document.querySelector(
+      `#example-${number}-gross`
+    ),
+
+    federalWithheld: document.querySelector(
+      `#example-${number}-federal`
+    )
+  })
+);
 
 const currencyFormatter = new Intl.NumberFormat('en-US', {
   style: 'currency',
@@ -81,6 +73,7 @@ let saveTimer;
 
 function numberValue(input, fallback = 0) {
   const value = Number(input.value);
+
   return Number.isFinite(value) ? value : fallback;
 }
 
@@ -106,14 +99,17 @@ function normalizeSettings(value) {
 
     federalExamples: examples.map((example) => ({
       grossPay: Number(example.grossPay) || 0,
-      federalWithheld: Number(example.federalWithheld) || 0
+      federalWithheld:
+        Number(example.federalWithheld) || 0
     }))
   };
 }
 
 function loadLocalSettings() {
   try {
-    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+    const saved = JSON.parse(
+      localStorage.getItem(STORAGE_KEY)
+    );
 
     if (saved) {
       if (Number.isFinite(Number(saved.hours))) {
@@ -123,7 +119,10 @@ function loadLocalSettings() {
       return normalizeSettings(saved.settings);
     }
   } catch (error) {
-    console.warn('Could not load saved paycheck settings.', error);
+    console.warn(
+      'Could not load saved paycheck settings.',
+      error
+    );
   }
 
   return structuredClone(defaults);
@@ -133,7 +132,7 @@ function saveLocalSettings() {
   localStorage.setItem(
     STORAGE_KEY,
     JSON.stringify({
-      hours: numberValue(hoursInput, 36),
+      hours: numberValue(hoursInput, 40),
       settings
     })
   );
@@ -145,7 +144,9 @@ function setSyncStatus(message, stateName) {
 }
 
 function displayPercent(value) {
-  return Number(value || 0) * 100;
+  return Number(
+    (Number(value || 0) * 100).toFixed(4)
+  );
 }
 
 function contributionDisplayValue(type, value) {
@@ -158,7 +159,8 @@ function contributionDisplayValue(type, value) {
 
 function fillSettingsForm() {
   fields.hourlyRate.value = settings.hourlyRate;
-  fields.otherTaxablePay.value = settings.otherTaxablePay;
+  fields.otherTaxablePay.value =
+    settings.otherTaxablePay;
 
   fields.traditional401kType.value =
     settings.traditional401kType;
@@ -169,16 +171,14 @@ function fillSettingsForm() {
       settings.traditional401kValue
     );
 
-  fields.roth401kType.value = settings.roth401kType;
+  fields.roth401kType.value =
+    settings.roth401kType;
 
   fields.roth401kValue.value =
     contributionDisplayValue(
       settings.roth401kType,
       settings.roth401kValue
     );
-
-  fields.federalAdjustment.value =
-    settings.federalAdjustment;
 
   fields.paIncomeTaxRate.value =
     displayPercent(settings.paIncomeTaxRate);
@@ -202,10 +202,13 @@ function fillSettingsForm() {
   });
 
   exampleFields.forEach((fieldPair, index) => {
-    const example =
-      settings.federalExamples[index] ||
-      defaults.federalExamples[index] ||
-      { grossPay: 0, federalWithheld: 0 };
+    const example = settings.federalExamples[index];
+
+    if (!example || !Number(example.grossPay)) {
+      fieldPair.grossPay.value = '';
+      fieldPair.federalWithheld.value = '';
+      return;
+    }
 
     fieldPair.grossPay.value = example.grossPay;
     fieldPair.federalWithheld.value =
@@ -224,15 +227,20 @@ function contributionInputValue(type, input) {
 }
 
 function readSettingsForm() {
-  const traditionalType = fields.traditional401kType.value;
+  const traditionalType =
+    fields.traditional401kType.value;
+
   const rothType = fields.roth401kType.value;
 
   settings = normalizeSettings({
-    hourlyRate: Math.max(0, numberValue(fields.hourlyRate)),
+    hourlyRate:
+      Math.max(0, numberValue(fields.hourlyRate)),
+
     otherTaxablePay:
       numberValue(fields.otherTaxablePay),
 
     traditional401kType: traditionalType,
+
     traditional401kValue:
       contributionInputValue(
         traditionalType,
@@ -240,6 +248,7 @@ function readSettingsForm() {
       ),
 
     roth401kType: rothType,
+
     roth401kValue:
       contributionInputValue(
         rothType,
@@ -247,55 +256,117 @@ function readSettingsForm() {
       ),
 
     federalAdjustment:
-      numberValue(fields.federalAdjustment),
+      Number(settings.federalAdjustment) || 0,
 
     paIncomeTaxRate:
-      Math.max(0, numberValue(fields.paIncomeTaxRate)) / 100,
+      Math.max(
+        0,
+        numberValue(fields.paIncomeTaxRate)
+      ) / 100,
 
     localIncomeTaxRate:
-      Math.max(0, numberValue(fields.localIncomeTaxRate)) / 100,
+      Math.max(
+        0,
+        numberValue(fields.localIncomeTaxRate)
+      ) / 100,
 
     paUnemploymentRate:
-      Math.max(0, numberValue(fields.paUnemploymentRate)) / 100,
+      Math.max(
+        0,
+        numberValue(fields.paUnemploymentRate)
+      ) / 100,
 
     socialSecurityRate:
-      Math.max(0, numberValue(fields.socialSecurityRate)) / 100,
+      Math.max(
+        0,
+        numberValue(fields.socialSecurityRate)
+      ) / 100,
 
     medicareRate:
-      Math.max(0, numberValue(fields.medicareRate)) / 100,
+      Math.max(
+        0,
+        numberValue(fields.medicareRate)
+      ) / 100,
 
     deductions: {
-      medical: Math.max(0, numberValue(fields.medical)),
-      add: Math.max(0, numberValue(fields.add)),
-      childLife: Math.max(0, numberValue(fields.childLife)),
-      dental: Math.max(0, numberValue(fields.dental)),
+      medical:
+        Math.max(0, numberValue(fields.medical)),
+
+      add:
+        Math.max(0, numberValue(fields.add)),
+
+      childLife:
+        Math.max(0, numberValue(fields.childLife)),
+
+      dental:
+        Math.max(0, numberValue(fields.dental)),
+
       employeeLife:
-        Math.max(0, numberValue(fields.employeeLife)),
+        Math.max(
+          0,
+          numberValue(fields.employeeLife)
+        ),
+
       longTermDisability:
-        Math.max(0, numberValue(fields.longTermDisability)),
+        Math.max(
+          0,
+          numberValue(fields.longTermDisability)
+        ),
+
       localServicesTax:
-        Math.max(0, numberValue(fields.localServicesTax)),
+        Math.max(
+          0,
+          numberValue(fields.localServicesTax)
+        ),
+
       spousalLife:
-        Math.max(0, numberValue(fields.spousalLife)),
+        Math.max(
+          0,
+          numberValue(fields.spousalLife)
+        ),
+
       shortTermDisability:
-        Math.max(0, numberValue(fields.shortTermDisability)),
-      vision: Math.max(0, numberValue(fields.vision)),
-      other: Math.max(0, numberValue(fields.other))
+        Math.max(
+          0,
+          numberValue(fields.shortTermDisability)
+        ),
+
+      vision:
+        Math.max(0, numberValue(fields.vision)),
+
+      other:
+        Math.max(0, numberValue(fields.other))
     },
 
-    federalExamples: exampleFields.map((fieldPair) => ({
-      grossPay:
-        Math.max(0, numberValue(fieldPair.grossPay)),
-      federalWithheld:
-        Math.max(0, numberValue(fieldPair.federalWithheld))
-    }))
+    federalExamples: exampleFields.map(
+      (fieldPair) => ({
+        grossPay:
+          Math.max(
+            0,
+            numberValue(fieldPair.grossPay)
+          ),
+
+        federalWithheld:
+          Math.max(
+            0,
+            numberValue(fieldPair.federalWithheld)
+          )
+      })
+    )
   });
 }
 
 function renderCalculation() {
-  const hours = Math.max(0, numberValue(hoursInput));
+  const hours = Math.max(
+    0,
+    numberValue(hoursInput)
+  );
+
   const result =
-    PaycheckCalculatorCore.calculatePaycheck(hours, settings);
+    PaycheckCalculatorCore.calculatePaycheck(
+      hours,
+      settings
+    );
 
   takeHomeOutput.textContent =
     currencyFormatter.format(result.takeHomePay);
@@ -304,18 +375,25 @@ function renderCalculation() {
     currencyFormatter.format(result.grossPay);
 
   totalDeductionsOutput.textContent =
-    currencyFormatter.format(result.totalDeductions);
+    currencyFormatter.format(
+      result.totalDeductions
+    );
 }
 
 async function syncSettings() {
-  setSyncStatus('Saving shared settings...', 'working');
+  setSyncStatus(
+    'Saving shared settings...',
+    'working'
+  );
 
   try {
     const response = await fetch(API_URL, {
       method: 'PUT',
+
       headers: {
         'Content-Type': 'application/json'
       },
+
       body: JSON.stringify(settings)
     });
 
@@ -325,9 +403,15 @@ async function syncSettings() {
       );
     }
 
-    setSyncStatus('Settings synced across devices', 'synced');
+    setSyncStatus(
+      'Settings synced across devices',
+      'synced'
+    );
   } catch (error) {
-    console.warn('Could not sync paycheck settings.', error);
+    console.warn(
+      'Could not sync paycheck settings.',
+      error
+    );
 
     setSyncStatus(
       'Saved in this browser; cloud sync unavailable',
@@ -352,7 +436,10 @@ function settingsChanged() {
 }
 
 async function loadSharedSettings() {
-  setSyncStatus('Loading shared settings...', 'working');
+  setSyncStatus(
+    'Loading shared settings...',
+    'working'
+  );
 
   try {
     const response = await fetch(API_URL, {
@@ -366,15 +453,22 @@ async function loadSharedSettings() {
     }
 
     const sharedSettings = await response.json();
+
     settings = normalizeSettings(sharedSettings);
 
     fillSettingsForm();
     saveLocalSettings();
     renderCalculation();
 
-    setSyncStatus('Settings synced across devices', 'synced');
+    setSyncStatus(
+      'Settings synced across devices',
+      'synced'
+    );
   } catch (error) {
-    console.warn('Could not load shared paycheck settings.', error);
+    console.warn(
+      'Could not load shared paycheck settings.',
+      error
+    );
 
     setSyncStatus(
       'Saved in this browser; cloud sync unavailable',
@@ -389,8 +483,15 @@ hoursInput.addEventListener('input', () => {
 });
 
 Object.values(fields).forEach((field) => {
-  field.addEventListener('input', settingsChanged);
-  field.addEventListener('change', settingsChanged);
+  field.addEventListener(
+    'input',
+    settingsChanged
+  );
+
+  field.addEventListener(
+    'change',
+    settingsChanged
+  );
 });
 
 exampleFields.forEach((fieldPair) => {
