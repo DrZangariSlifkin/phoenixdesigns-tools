@@ -64,9 +64,11 @@
         y: numeric(example.federalWithheld, NaN)
       }))
       .filter((example) =>
-        Number.isFinite(example.x) &&
-        Number.isFinite(example.y)
-      );
+  Number.isFinite(example.x) &&
+  Number.isFinite(example.y) &&
+  example.x > 0 &&
+  example.y >= 0
+);
 
     if (valid.length < 2) {
       return { slope: 0, intercept: 0 };
